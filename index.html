@@ -516,7 +516,7 @@
                 prvY = crrY;
 
                 const seconds = Math.floor(t / 1000);
-                document.getElementById("lissajous-status").innerHTML = Tiempo: ${seconds}s / 60s;
+                document.getElementById("lissajous-status").innerHTML = `Tiempo: ${seconds}s / 60s`;
 
                 if (t > 60e3) {
                     timer.stop();
