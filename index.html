@@ -183,28 +183,18 @@
 
         <div class="charts-grid">
             <div class="chart-container">
-                <div class="chart-title">📈 Codigo 1</div>
-                <div id="codigo1"></div>
+                <div class="chart-title">📈 Ventas por Mes</div>
+                <div id="barChart"></div>
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">🥧 Codigo 2</div>
-                <div id="codigo2"></div>
+                <div class="chart-title">🥧 Distribución por Categoría</div>
+                <div id="pieChart"></div>
             </div>
 
             <div class="chart-container full-width">
-                <div class="chart-title">📊 Codigo 3</div>
-                <div id="codigo3"></div>
-            </div>
-
-             <div class="chart-container full-width">
-                <div class="chart-title">📊 Codigo 4</div>
-                <div id="codigo4"></div>
-            </div>
-
-            <div class="chart-container full-width">
-                <div class="chart-title">📊 Codigo 5</div>
-                <div id="codigo5"></div>
+                <div class="chart-title">📊 Tendencia de Usuarios</div>
+                <div id="lineChart"></div>
             </div>
         </div>
     </div>
@@ -281,16 +271,21 @@
                 .style('transform', 'translateY(0)');
         }
 
-        // Gráfico de barras
-        function coordsPixels(selector) {
-            var txt = d3.select(selector).append('text');
-            var svg = d3.select(selector).attr('cursor', 'crosshair')
-                .on('mousemove', function() {
-                  var pt = d3.mouse(svg.node());
-                  txt.attr('x', 18+pt[0])
-                    .attr('y', 6+pt[1])
-                    .text('' + pt[0] + ',' + pt[1]);
-                });
+        function addMouseCoords(svgSelector) {
+            const svg = d3.select(svgSelector);
+            const coordText = svg.append("text")
+                .attr("fill", "black")
+                .attr("font-size", "12px");
+
+            svg.on("mousemove", function(event) {
+                const [x, y] = d3.pointer(event);
+                coordText
+                    .attr("x", x + 10)
+                    .attr("y", y - 10)
+                    .text(`${Math.round(x)}, ${Math.round(y)}`);
+            });
+}
+
         }
 
         // Gráfico circular (pie chart)
@@ -479,7 +474,7 @@
         // Inicializar dashboard
         function initDashboard() {
             createStatsCards();
-            createcoordsPixels('#codigo1');
+            addMouseCoords('#barChart svg');
             createPieChart();
             createLineChart();
         }
