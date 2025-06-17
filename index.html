@@ -272,9 +272,18 @@
                         .attr("fill-opacity", 0.4);
                 }
 
+                
+                // Get min/max from data
+                const xExtent = d3.extent(data, d => +d.A);
+                const yExtent = d3.extent(data, d => +d.B);
+
+                // Define scaling functions to map data to SVG coordinates
+                const xScale = d3.scaleLinear().domain(xExtent).range([10, 190]);  // Leave some margin
+                const yScale = d3.scaleLinear().domain(yExtent).range([10, 240]);
+
                 // Usar las columnas A y B del CSV
-                const cs1 = drawCircles(svg1, data, d => +d["A"], d => +d["B"], sc1);
-                const cs2 = drawCircles(svg2, data, d => +d["A"], d => +d["B"], sc2);
+                const cs1 = drawCircles(svg1, data, d => xScale(+d.A), d => yScale(+d.B), sc1);
+                const cs2 = drawCircles(svg2, data, d => xScale(+d.A), d => yScale(+d.B), sc2);
 
                 // Instalar manejadores de eventos
                 svg1.attr("cursor", "crosshair")
