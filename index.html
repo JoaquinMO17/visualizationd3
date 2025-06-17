@@ -139,33 +139,37 @@
 <body>
     <div class="dashboard">
         <div class="header">
-            <div class="author">Joaquin Murguia Ortiz</div>
-            <h1>🎨 Dashboard D3.js</h1>
-            <p>Codigos utilizados en clase</p>
+            <div class="author">👨‍💻 Isaías López Tzec</div>
+            <h1>🎨 Dashboard de Visualizaciones D3.js</h1>
+            <p>Colección de gráficas interactivas avanzadas</p>
         </div>
 
         <div class="charts-grid">
-            <!-- Mouse Tracker -->
+            <!-- Coordenadas del Mouse -->
             <div class="chart-container">
-                <div class="chart-title">🎯 Tracker de Coordenadas</div>
+                <div class="chart-title">🎯 Coordenadas del Mouse</div>
+                <div class="chart-description">Mueve el mouse para ver las coordenadas en tiempo real</div>
                 <div id="coordsChart" style="display: flex; justify-content: center;"></div>
             </div>
 
             <!-- Brush Interactivo -->
             <div class="chart-container">
-                <div class="chart-title">Heatmap con Brush</div>
+                <div class="chart-title">🖌️ Brush Interactivo</div>
+                <div class="chart-description">Mueve el mouse sobre el área izquierda para cambiar colores</div>
                 <div id="brushChart" style="display: flex; justify-content: center; align-items: center;"></div>
             </div>
 
             <!-- Drag and Drop -->
             <div class="chart-container">
-                <div class="chart-title">Arrastra los puntos</div>
+                <div class="chart-title">🔄 Drag and Drop</div>
+                <div class="chart-description">Arrastra los círculos para moverlos</div>
                 <div id="dragChart" style="display: flex; justify-content: center;"></div>
             </div>
 
             <!-- Animación Stagger -->
             <div class="chart-container">
-                <div class="chart-title">Grafica con animacion</div>
+                <div class="chart-title">📊 Animación Stagger</div>
+                <div class="chart-description">Haz clic en el gráfico para alternar entre datasets</div>
                 <div id="staggerChart" style="display: flex; justify-content: center;"></div>
                 <div style="text-align: center;">
                     <button class="control-button" onclick="toggleStagger()">Alternar Datos</button>
@@ -174,7 +178,8 @@
 
             <!-- Curva de Lissajous -->
             <div class="chart-container full-width">
-                <div class="chart-title">Linea animada</div>
+                <div class="chart-title">🌀 Curva de Lissajous</div>
+                <div class="chart-description">Visualización matemática paramétrica en tiempo real</div>
                 <div id="lissajousChart"></div>
                 <div style="text-align: center;">
                     <button class="control-button" onclick="restartLissajous()">Reiniciar</button>
