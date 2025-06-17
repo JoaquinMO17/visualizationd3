@@ -283,11 +283,8 @@
                     .attr("x", x + 10)
                     .attr("y", y - 10)
                     .text(`${Math.round(x)}, ${Math.round(y)}`);
-            });
-}
-
+        });
         }
-
         // Gráfico circular (pie chart)
         function createPieChart() {
             const width = 350;
@@ -472,12 +469,63 @@
         }
 
         // Inicializar dashboard
-        function initDashboard() {
-            createStatsCards();
-            addMouseCoords('#barChart svg');
-            createPieChart();
-            createLineChart();
-        }
+  function initDashboard() {
+    initCoordsTracker("#coordsSVG");
+    initProximityHeatmap("#heatmapSVG");
+  }
+
+  function initCoordsTracker(selector) {
+    const svg = d3.select(selector);
+    const text = svg.append("text")
+      .attr("fill", "black")
+      .attr("font-size", "12px");
+
+    svg.on("mousemove", function(event) {
+      const [x, y] = d3.pointer(event);
+      text
+        .attr("x", x + 10)
+        .attr("y", y - 10)
+        .text(`(${x.toFixed(0)}, ${y.toFixed(0)})`);
+    });
+  }
+
+  function initProximityHeatmap(selector) {
+    const svg = d3.select(selector);
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    // Simulate random data points
+    const data = d3.range(80).map(() => ({
+      x: Math.random() * width,
+      y: Math.random() * height
+    }));
+
+    const colorScale = d3.scaleLinear()
+      .domain([0, 80, 200])
+      .range(["lime", "yellow", "red"]);
+
+    const circles = svg.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("r", 5)
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y)
+      .attr("fill", colorScale(9999))
+      .attr("fill-opacity", 0.5);
+
+    svg.on("mousemove", function(event) {
+      const [mx, my] = d3.pointer(event);
+      circles.attr("fill", d => {
+        const dist = Math.hypot(mx - d.x, my - d.y);
+        return colorScale(dist);
+      });
+    });
+
+    svg.on("mouseleave", () => {
+      circles.attr("fill", colorScale(9999));
+    });
+  }
 
         // Ejecutar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', initDashboard);
