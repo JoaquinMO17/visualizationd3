@@ -219,7 +219,7 @@
                     const [x, y] = d3.pointer(event);
                     txt.attr('x', 18 + x)
                         .attr('y', 6 + y)
-                        .text((${Math.round(x)}, ${Math.round(y)}));
+                        .text(`(${Math.round(x)}, ${Math.round(y)})`);
                 })
                 .on('mouseleave', function() {
                     txt.text('');
