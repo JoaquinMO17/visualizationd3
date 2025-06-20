@@ -5,33 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream de Datos con D3.js</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-    let svg, xScale, yScale, xAxis, yAxis, line;
-
-    function initChart() {
-        d3.select("#chart").selectAll("*").remove(); // Limpiar el SVG existente
-
-        const width = document.getElementById('chart').clientWidth - margin.left - margin.right;
-        const height = 400 - margin.top - margin.bottom;
-
-        svg = d3.select("#chart")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
-
-        xScale = d3.scaleTime().range([0, width]);
-        yScale = d3.scaleLinear().range([height, 0]);
-
-        xAxis = svg.append("g").attr("transform", `translate(0,${height})`);
-        yAxis = svg.append("g");
-
-        line = d3.line()
-            .x(d => xScale(d.time))
-            .y(d => yScale(d.value));
-    }
-    </script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -182,6 +156,33 @@ async function fetchEarthquakeData() {
     }
 }
 
+<script>
+    let svg, xScale, yScale, xAxis, yAxis, line;
+
+    function initChart() {
+        d3.select("#chart").selectAll("*").remove(); // Limpiar el SVG existente
+
+        const width = document.getElementById('chart').clientWidth - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        xScale = d3.scaleTime().range([0, width]);
+        yScale = d3.scaleLinear().range([height, 0]);
+
+        xAxis = svg.append("g").attr("transform", `translate(0,${height})`);
+        yAxis = svg.append("g");
+
+        line = d3.line()
+            .x(d => xScale(d.time))
+            .y(d => yScale(d.value));
+    }
+
     function updateChart() {
         const width = document.getElementById('chart').clientWidth - margin.left - margin.right;
         const height = 400 - margin.top - margin.bottom;
@@ -211,6 +212,7 @@ async function fetchEarthquakeData() {
             document.getElementById('average').textContent = avg;
         }
     }
+</script>
 
 function startStream() {
     if (!isStreaming) {
