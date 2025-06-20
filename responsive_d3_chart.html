@@ -123,180 +123,57 @@
     <script>
         // Configuración del gráfico
         const margin = {top: 20, right: 30, bottom: 40, left: 50};
-        const maxDataPoints = 50; // Máximo de puntos a mostrar
-        
-        // Datos del stream
-        let data = [];
-        let streamInterval;
-        let isStreaming = false;
-        
-        // Variables para dimensiones
-        let width, height, svg, g, xScale, yScale, line, xAxis, yAxis, xAxisG, yAxisG, xGrid, yGrid, path;
-        
-        // Función para obtener dimensiones de la ventana
-        function getChartDimensions() {
-            const chartContainer = document.getElementById('chart');
-            const containerRect = chartContainer.getBoundingClientRect();
-            return {
-                width: containerRect.width - margin.left - margin.right,
-                height: containerRect.height - margin.top - margin.bottom
-            };
-        }
-        
-        // Función para inicializar el gráfico
-        function initChart() {
-            // Limpiar el contenido anterior
-            d3.select("#chart").selectAll("*").remove();
-            
-            const dimensions = getChartDimensions();
-            width = dimensions.width;
-            height = dimensions.height;
-            
-            // Crear SVG
-            svg = d3.select("#chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
-                
-            g = svg.append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
-            
-            // Escalas
-            xScale = d3.scaleTime()
-                .range([0, width]);
-                
-            yScale = d3.scaleLinear()
-                .range([height, 0]);
-            
-            // Generador de línea
-            line = d3.line()
-                .x(d => xScale(d.time))
-                .y(d => yScale(d.value))
-                .curve(d3.curveMonotoneX);
-            
-            // Ejes
-            xAxis = d3.axisBottom(xScale)
-                .tickFormat(d3.timeFormat("%H:%M:%S"));
-                
-            yAxis = d3.axisLeft(yScale);
-            
-            // Agregar ejes al SVG
-            xAxisG = g.append("g")
-                .attr("class", "axis")
-                .attr("transform", `translate(0,${height})`);
-                
-            yAxisG = g.append("g")
-                .attr("class", "axis");
-            
-            // Grid
-            xGrid = g.append("g")
-                .attr("class", "grid")
-                .attr("transform", `translate(0,${height})`);
-                
-            yGrid = g.append("g")
-                .attr("class", "grid");
-            
-            // Path para la línea
-            path = g.append("path")
-                .attr("class", "line");
-        }
-        
-        // Función para generar datos aleatorios
-        function generateDataPoint() {
-            const now = new Date();
-            const value = Math.random() * 100 + Math.sin(now.getTime() / 1000) * 20 + 50;
-            return {
-                time: now,
-                value: value
-            };
-        }
-        
-        // Función para actualizar el gráfico
-        function updateChart() {
-            if (!data.length) return;
-            
-            // Actualizar dominios de las escalas
-            xScale.domain(d3.extent(data, d => d.time));
-            yScale.domain(d3.extent(data, d => d.value));
-            
-            // Actualizar ejes
-            xAxisG.transition()
-                .duration(500)
-                .call(xAxis);
-                
-            yAxisG.transition()
-                .duration(500)
-                .call(yAxis);
-            
-            // Actualizar grid
-            xGrid.transition()
-                .duration(500)
-                .call(d3.axisBottom(xScale)
-                    .tickSize(-height)
-                    .tickFormat("")
-                );
-                
-            yGrid.transition()
-                .duration(500)
-                .call(d3.axisLeft(yScale)
-                    .tickSize(-width)
-                    .tickFormat("")
-                );
-            
-            // Actualizar línea
-            path.datum(data)
-                .transition()
-                .duration(500)
-                .attr("d", line);
-            
-            // Actualizar estadísticas
-            updateStats();
-        }
-        
-        // Función para actualizar estadísticas
-        function updateStats() {
-            document.getElementById('point-count').textContent = data.length;
-            
-            if (data.length > 0) {
-                const lastValue = data[data.length - 1].value;
-                const average = data.reduce((sum, d) => sum + d.value, 0) / data.length;
-                
-                document.getElementById('last-value').textContent = lastValue.toFixed(2);
-                document.getElementById('average').textContent = average.toFixed(2);
+        const maxDataPoints = 50;
+let data = [];
+let streamInterval;
+let isStreaming = false;
+const USGS_URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson';
+
+async function fetchEarthquakeData() {
+    try {
+        const response = await fetch(USGS_URL);
+        const json = await response.json();
+
+        json.features.forEach(feature => {
+            const props = feature.properties;
+            const time = new Date(props.time);
+            const magnitude = props.mag;
+
+            if (!data.some(d => d.time.getTime() === time.getTime())) {
+                data.push({ time, value: magnitude });
             }
+        });
+
+        if (data.length > maxDataPoints) {
+            data = data.slice(data.length - maxDataPoints);
         }
+
+        updateChart();
+
+    } catch (err) {
+        console.error("Error al obtener datos:", err);
+    }
+}
+
+function startStream() {
+    if (!isStreaming) {
+        isStreaming = true;
+        fetchEarthquakeData();
+        streamInterval = setInterval(fetchEarthquakeData, 60000);
+        document.querySelector('.start-btn').style.opacity = '0.5';
+        document.querySelector('.stop-btn').style.opacity = '1';
+    }
+}
+
+function stopStream() {
+    if (isStreaming) {
+        isStreaming = false;
+        clearInterval(streamInterval);
+        document.querySelector('.start-btn').style.opacity = '1';
+        document.querySelector('.stop-btn').style.opacity = '0.5';
+    }
+}
         
-        // Función para agregar un nuevo punto de datos
-        function addDataPoint() {
-            const newPoint = generateDataPoint();
-            data.push(newPoint);
-            
-            // Mantener solo los últimos N puntos
-            if (data.length > maxDataPoints) {
-                data.shift();
-            }
-            
-            updateChart();
-        }
-        
-        // Funciones de control
-        function startStream() {
-            if (!isStreaming) {
-                isStreaming = true;
-                streamInterval = setInterval(addDataPoint, 1000); // Cada segundo
-                document.querySelector('.start-btn').style.opacity = '0.5';
-                document.querySelector('.stop-btn').style.opacity = '1';
-            }
-        }
-        
-        function stopStream() {
-            if (isStreaming) {
-                isStreaming = false;
-                clearInterval(streamInterval);
-                document.querySelector('.start-btn').style.opacity = '1';
-                document.querySelector('.stop-btn').style.opacity = '0.5';
-            }
-        }
         
         function clearData() {
             stopStream();
@@ -321,12 +198,7 @@
         window.addEventListener('load', () => {
             initChart();
             
-            // Inicializar con algunos datos
-            for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    addDataPoint();
-                }, i * 100);
-            }
+            
             
             // Configurar estado inicial de botones
             document.querySelector('.stop-btn').style.opacity = '0.5';
