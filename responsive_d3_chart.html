@@ -159,7 +159,7 @@ function startStream() {
     if (!isStreaming) {
         isStreaming = true;
         fetchEarthquakeData();
-        streamInterval = setInterval(fetchEarthquakeData, 60000);
+        streamInterval = setInterval(fetchEarthquakeData, 600);
         document.querySelector('.start-btn').style.opacity = '0.5';
         document.querySelector('.stop-btn').style.opacity = '1';
     }
