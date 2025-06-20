@@ -155,6 +155,36 @@ async function fetchEarthquakeData() {
     }
 }
 
+    function updateChart() {
+        const width = document.getElementById('chart').clientWidth - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        xScale.domain(d3.extent(data, d => d.time));
+        yScale.domain([0, d3.max(data, d => d.value)]);
+
+        xAxis.call(d3.axisBottom(xScale));
+        yAxis.call(d3.axisLeft(yScale));
+
+        svg.selectAll(".line").remove();
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 2)
+            .attr("d", line);
+
+        // Actualizar estadísticas
+        document.getElementById('point-count').textContent = data.length;
+        if (data.length > 0) {
+            const last = data[data.length - 1].value;
+            const avg = (data.reduce((sum, d) => sum + d.value, 0) / data.length).toFixed(2);
+            document.getElementById('last-value').textContent = last.toFixed(2);
+            document.getElementById('average').textContent = avg;
+        }
+    }
+
 function startStream() {
     if (!isStreaming) {
         isStreaming = true;
